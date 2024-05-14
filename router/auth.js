@@ -16,12 +16,12 @@ authRouter
   .get("/logout", logout)
   .get("/login", getLoginUser)
   .get("/signup", getSignup)
+  .get("/check", passport.authenticate("jwt"), checkAuth)
   .post(
     "/login",
     passport.authenticate("local", { failureRedirect: "/login" }),
     loginUser
   )
-  .get("/check", passport.authenticate("jwt"), checkAuth)
   .get(
     "/google",
     passport.authenticate("google", { scope: ["email ,profile"] })

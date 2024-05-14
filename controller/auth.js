@@ -31,10 +31,10 @@ const createUser = async (req, res) => {
       password: hashedPassword,
       salt,
     });
-    if (result) return res.redirect("/");
-    // return res
-    //   .status(201)
-    //   .send({ message: "User created successfully", user: result });
+    // if (result) return res.redirect("/");
+    return res
+      .status(201)
+      .send({ message: "User created successfully", user: result });
 
     return res.status(500).send({ message: "Something went wrong" });
   } catch (error) {

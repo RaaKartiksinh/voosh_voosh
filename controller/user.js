@@ -10,13 +10,14 @@ const editUser = async (req, res) => {
       return res.status(400).send({ message: "Missing dependency" });
     }
 
-    // File upload
-    let fileDetails = null;
+    let fileDetails;
 
-    if (req.files && req.files.profileUrl) {
-      let File = req.files.profileUrl;
+    if (req.body.profileUrl) {
+      fileDetails = req.body.profileUrl;
+    } else if (req.files && req.files.profileUrl) {
+      const File = req.files.profileUrl;
 
-      if (File?.length) {
+      if (File.length) {
         fileDetails = [];
         for (let i = 0; i < File.length; i++) {
           const result = FileUpload(File[i]);
@@ -26,26 +27,27 @@ const editUser = async (req, res) => {
       } else {
         const result = FileUpload(File);
         console.log("File Result Single", result);
-        fileDetails = result;
+        fileDetails = result.fullPath;
       }
     }
 
     let result;
 
-    if (!fileDetails?.length) {
+    if (fileDetails) {
       result = await userModel.userModel.findByIdAndUpdate(
         { _id: id },
-        { ...req.body, profileUrl: fileDetails?.fullPath },
-        {
-          new: true,
-        }
+        { ...req.body, profileUrl: fileDetails },
+        { new: true }
       );
     } else {
-      return res.status(500).send({ message: "Something went wrong" });
+      result = await userModel.userModel.findByIdAndUpdate(
+        { _id: id },
+        { ...req.body },
+        { new: true }
+      );
     }
 
     if (result) {
-      result = !fileDetails?.length ? result._doc : result;
       return res.status(200).send({ message: "Success", fileDetails: result });
     }
 
@@ -58,9 +60,8 @@ const editUser = async (req, res) => {
 
 const getUserList = async (req, res) => {
   try {
-    // console.log("user =====================>", user.role);
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
+    const page = parseInt(req.query.page) || {};
+    const limit = parseInt(req.query.limit) || {};
     const skip = (page - 1) * limit;
 
     let result = await userModel.userModel
@@ -81,9 +82,10 @@ const getUserList = async (req, res) => {
 const getUserProfile = async (req, res) => {
   try {
     const { id } = req.user;
-    const result = await userModel.userModel.findOne({ _id: id }).select('email  role firstName lastName profileUrl accountType bio');
+    const result = await userModel.userModel
+      .findOne({ _id: id })
+      .select("email  role firstName lastName profileUrl accountType bio");
     if (result) {
-
       return res.status(200).send({ message: "success", userProfile: result });
       // return res.render("profile");
     }
