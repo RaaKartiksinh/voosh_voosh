@@ -15,7 +15,7 @@ const getAdminList = async (req, res) => {
     if (result) {
       return res.status(200).send({ message: "success", userList: result });
     }
-    return res.status(500).send({ message: "Something went wrong" });
+    return res.status(400).send({ message: "Something went wrong" });
   } catch (error) {
     console.error("Error during getUserList:", error);
     return res.status(500).send({ message: "Internal Server Error" });

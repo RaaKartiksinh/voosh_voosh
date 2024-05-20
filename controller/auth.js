@@ -4,7 +4,7 @@ const crypto = require("crypto");
 const createUser = async (req, res) => {
   try {
     const { role, email, firstName, lastName, password } = req.body;
-    console.log("req.body  rrrrrrrrrrrrrrrrrrrrrrrrrr", req.body);
+   
     // Check dependency
     if (!email || !firstName || !lastName || !password)
       return res.status(400).send({ message: "Missing dependency" });
@@ -36,7 +36,7 @@ const createUser = async (req, res) => {
       .status(201)
       .send({ message: "User created successfully", user: result });
 
-    return res.status(500).send({ message: "Something went wrong" });
+    return res.status(400).send({ message: "Something went wrong" });
   } catch (error) {
     // ValidationError
     if (error.name === "ValidationError") {
